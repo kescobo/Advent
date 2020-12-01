@@ -1,0 +1,3 @@
+[submodule "2019"]
+	path = 2019
+	url = git@github.com:kescobo/advent2019.git
