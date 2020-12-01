@@ -15,3 +15,5 @@ function accounting(input, n)
     end
     error("No combinations of $n elements sum to 2020")
 end
+
+end # module
