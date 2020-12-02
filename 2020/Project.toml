@@ -1,9 +1,10 @@
-name="Advent2020"
-authors=["Kevin Bonham, PhD"]
+name = "Advent2020"
+authors = ["Kevin Bonham, PhD"]
 
 [deps]
 Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
 IterTools = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
+Weave = "44d3d7a6-8a23-5bf8-98c5-b353f8df5ec9"
 
 [compat]
 julia = "1.6"
