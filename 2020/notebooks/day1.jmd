@@ -43,7 +43,9 @@ Of course, your expense report is much larger. Find the two entries that sum to 
 ## Setup
 
 ```julia
-using Combinatorics, Test, Advent2020
+using Advent2020
+using Test
+using Advent2020.Combinatorics
 
 const day1_input = parse.(Int, get_data(1))
 ```
