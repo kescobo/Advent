@@ -38,19 +38,42 @@ const input = parse.(Int, readlines("data/day_1.txt"))
 # Of course, your expense report is much larger. Find the two entries that sum to 2020; what do you get if you multiply them together?
 
 function part1(input)
-    entries = parse.(Int, input)
-    n = length(entries)
-    for (e1, e2) in 
+    for (i, j) in combinations(input, 2)
+        i + j == 2020 && return i * j
+    end
+    error("No combinations added up to 2020")
 end
 
 testin = [1721, 979, 366, 299, 675, 1456]
 
-@test part1(testin) = 514579
+@test part1(testin) == 514579
 
-@info "Part 1" part1(input)
+@info part1(input)
+
+# ## Part Two
+#
+# The Elves in accounting are thankful for your help; one of them even offers you a starfish coin they had left over from a past vacation. They offer you a second one if you can find three numbers in your expense report that meet the same criteria.
+#
+# Using the above example again, the three entries that sum to 2020 are 979, 366, and 675. Multiplying them together produces the answer, 241861950.
+#
+# In your expense report, what is the product of the three entries that sum to 2020?
 
 
-function part_2(input)
-    nothing
+function part2(input, n)
+    for c in combinations(input, n)
+        reduce(+, c) == 2020 && return reduce(*, c)
+    end
+    error("No combinations of length $n added up to 2020")
 end
-@info part_2(input)
+
+@test part2(testin, 3) == 241861950
+@test part2(input, 2) == part1(input)
+
+@info part2(input, 3)
+
+# ## Using Module
+
+using Advent2020
+
+@info "Part 1" accounting(input, 2)
+@info "Part 2" accounting(input, 3)
