@@ -1,3 +1,5 @@
+https://adventofcode.com/2020/day/3
+
 # Day 3: Toboggan Trajectory
 
 With the toboggan login problems resolved, you set off toward the airport. 
@@ -72,7 +74,7 @@ how many trees would you encounter?
 ## Setup
 
 ```julia
-using Advent2020, Test
+using Advent2020, Test, SparseArrays
 
 example1 = """
 ..##.......
@@ -88,4 +90,108 @@ example1 = """
 .#..#...#.#
 """
 
-slope1 = (3,1)
+example1 = split(example1)
+
+slope1 = (1,3)
+```
+
+```julia
+function parse_terrain(input)
+    xs = Int[]
+    ys = Int[]
+    for (i, line) in enumerate(input)
+        for (j, c) in enumerate(line)
+            if c == '#'
+                push!(xs, i)
+                push!(ys, j)
+            end
+        end
+    end
+    return sparse(xs, ys, ones(Bool, length(xs)))
+end
+
+function move_tob(terrain, pos, move)
+    ncols = size(terrain, 2)
+
+    newi = pos[1] + move[1]
+    newj = pos[2] + move[2]
+    newj > ncols && (newj -= ncols)
+    return (newi, newj)
+end
+
+function run_toboggan(terrain, slope)
+    nrows = size(terrain, 1)
+    # starting pos
+    i = 1 # row
+    j = 1 # col
+    trees = 0
+    while true
+        (i,j) = move_tob(terrain, (i, j), slope)
+        i > nrows && break
+        terrain[i,j] && (trees += 1)
+    end
+    return trees
+end
+example_terrain = parse_terrain(example1)
+
+@test run_toboggan(example_terrain, slope1) == 7
+```
+
+## Answer
+
+```julia
+terrain = parse_terrain(get_data(3))
+
+run_toboggan(terrain, (slope1))
+```
+
+```julia
+@test run_toboggan(terrain, (slope1)) == 207
+```
+
+## Part 2
+
+Time to check the rest of the slopes -
+you need to minimize the probability of a sudden arboreal stopafter all.
+
+Determine the number of trees you would encounter if,
+for each of the following slopes,
+you start at the top-left corner and traverse the map all the way to the bottom:
+
+    Right 1, down 1.
+    Right 3, down 1. (This is the slope you already checked.)
+    Right 5, down 1.
+    Right 7, down 1.
+    Right 1, down 2.
+
+In the above example, these slopes would find 2, 7, 3, 4, and 2 tree(s) respectively;
+multiplied together, these produce the answer 336.
+
+What do you get if you multiply together the number of trees encountered on each of the listed slopes?
+
+```julia
+part2_slopes = [
+    (1, 1)
+    (1, 3)
+    (1, 5)
+    (1, 7)
+    (2, 1)
+]
+
+function solve2(terrain, slopes)
+    tree_product = 1
+    for slope in slopes
+        trees = run_toboggan(terrain, slope)
+        tree_product *= trees
+    end
+    return tree_product
+end
+
+@test solve2(example_terrain, part2_slopes) == 336
+```
+
+Answer:
+
+```julia
+@test solve2(terrain, part2_slopes) == 2655892800
+```
