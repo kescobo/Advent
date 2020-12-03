@@ -2,13 +2,13 @@ using Test
 using Weave
 
 @testset "Day 1" begin
-    Weave.include_weave("../notebooks/day1.jmd")
+    include("../notebooks/day1.jl")
 end
 
 @testset "Day 2" begin
-    Weave.include_weave("../notebooks/day2.jmd")
+    include("../notebooks/day2.jl")
 end
 
 @testset "Day 3" begin
-    Weave.include_weave("../notebooks/day3.jmd")
+    include("../notebooks/day3.jl")
 end

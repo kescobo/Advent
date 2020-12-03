@@ -17,7 +17,8 @@ export parse_day2_input,
 using HTTP, Dates, JSON
 # Day 1
 using Combinatorics
-
+# Day 3
+using SparseArrays
 
 
 #############
