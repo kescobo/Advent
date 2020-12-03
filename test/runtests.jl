@@ -8,3 +8,7 @@ end
 @testset "Day 2" begin
     Weave.include_weave("../notebooks/day2.jmd")
 end
+
+@testset "Day 3" begin
+    Weave.include_weave("../notebooks/day3.jmd")
+end
