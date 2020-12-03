@@ -13,7 +13,9 @@ export parse_day2_input,
        isvalidpw_toboggan
 
 
-
+# Utilities
+using HTTP, Dates, JSON
+# Day 1
 using Combinatorics
 
 
@@ -22,10 +24,59 @@ using Combinatorics
 # Functions #
 #############
 
-# Utiliites
+# Utiliites (Some modified from https://github.com/SebRollen/AdventOfCode.jl/blob/master/src/AdventOfCode.jl)
+_base_url(year, day) = "https://adventofcode.com/$year/day/$day"
+
+function _get_cookies()
+    if "AOC_SESSION" ∉ keys(ENV)
+        error("Session cookie in ENV[\"AOC_SESSION\"] needed to download data.")
+    end
+    return Dict("session" => ENV["AOC_SESSION"])
+end
+
+function _download_data(year, day)
+    result = HTTP.get(_base_url(year, day) * "/input", cookies = _get_cookies())
+    if result.status == 200
+        return result.body
+    end
+    error("Unable to download data")
+end
+
+function _is_unlocked(year, day)
+    time_req = HTTP.get("http://worldclockapi.com/api/json/est/now")
+    current_datetime = JSON.parse(String(time_req.body))["currentDateTime"]
+    current_date = Date(current_datetime[1:10])
+    is_unlocked = current_date >= Date(year, 12, day)
+    if !is_unlocked
+        @warn "Advent of Code for year $year and day $day hasn't unlocked yet."
+    end
+    is_unlocked
+end
+
+function _setup_data_file(year, day, path)
+    if isfile(path)
+        @warn "$data_path already exists. AdventOfCode.jl will not redownload it"
+        return nothing
+    end
+    time_req = HTTP.get("http://worldclockapi.com/api/json/est/now")
+    current_datetime = JSON.parse(String(time_req.body))["currentDateTime"]
+    current_date = Date(current_datetime[1:10])
+    if _is_unlocked(year, day)
+        data = _download_data(year, day)
+        mkpath(splitdir(path)[1])
+        open(path, "w+") do io
+            write(io, data)
+        end
+    end
+end
 
 _get_input_path(day) = joinpath(@__DIR__, "..", "data", "day_$day.txt")
-get_data(day) = eachline(_get_input_path(day))
+
+function get_data(day)
+    datapath = _get_input_path(day)
+    isfile(datapath) || _setup_data_file(2020, day, datapath)
+    eachline(datapath)
+end
 
 # Day 1
 
