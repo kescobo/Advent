@@ -12,6 +12,13 @@ export parse_day2_input,
        isvalidpw_sled,
        isvalidpw_toboggan
 
+# Day 4
+export parse_passport,
+       iter_passports,
+       isvalidpassport,
+       PPField,
+       ppfield,
+       isvalidfield
 
 # Utilities
 using HTTP, Dates, JSON
@@ -19,6 +26,8 @@ using HTTP, Dates, JSON
 using Combinatorics
 # Day 3
 using SparseArrays
+# Day 4
+using DataFrames
 
 
 #############
@@ -113,5 +122,101 @@ end
 function isvalidpw_toboggan(pw, letter, lower, upper)
     (pw[lower] == letter) ⊻ (pw[upper] == letter)
 end
+
+# Day 4
+
+function parse_passport(passport)
+    entries = split(passport, (' ', ':', '\n'))
+    pp = NamedTuple(
+        Symbol(entries[i])=>entries[i+1] for i in 1:2:length(entries)
+    )
+    return pp
+end
+
+
+const PP_FIELDS = (:byr, :iyr, :eyr, :hgt, :hcl, :ecl, :pid, :cid)
+
+struct PPField{x} 
+    value::AbstractString
+end
+
+getvalue(ppf::PPField) = ppf.value
+
+ppfield(x::Symbol, val) = PPField{x}(string(val))
+ppfield(x::AbstractString, val) = ppfield(Symbol(x), val)
+
+isvalidfield(::PPField) = error("No rule defined for this field" )
+isvalidfield(::PPField{:cid}) = true
+
+
+function isvalidfield(ppf::PPField{:byr})
+    val = getvalue(ppf)
+    occursin(r"^\d{4}$", val) || return false
+    yr = parse(Int, val)
+    return 1920 <= yr <= 2002
+
+end
+
+function isvalidfield(ppf::PPField{:iyr})
+    val = getvalue(ppf)
+    occursin(r"^\d{4}$", val) || return false
+    yr = parse(Int, val)
+    return 2010 <= yr <= 2020
+end
+
+function isvalidfield(ppf::PPField{:eyr})
+    val = getvalue(ppf)
+    occursin(r"^\d{4}$", val) || return false
+    yr = parse(Int, val)
+    return 2020 <= yr <= 2030
+end
+
+function isvalidfield(ppf::PPField{:hgt})
+    val = getvalue(ppf)
+    m = match(r"^(\d{2,3})(cm|in)$", val)
+    isnothing(m) && return false
+    (height, unit) = m.captures
+    height = parse(Int, height)
+    (unit == "cm") && (150 <= height <= 193) && return true
+    (unit == "in") && (59 <= height <= 76) && return true
+    return false
+end
+
+function isvalidfield(ppf::PPField{:hcl})
+    val = getvalue(ppf)
+    return occursin(r"^#[0-9a-f]{6}$", val)
+end
+
+function isvalidfield(ppf::PPField{:ecl})
+    val = getvalue(ppf)
+    return in(val, ("amb", "blu", "brn", "gry", "grn", "hzl", "oth"))
+end
+
+function isvalidfield(ppf::PPField{:pid})
+    val = getvalue(ppf)
+    return occursin(r"^\d{9}$", val)
+end
+
+
+function iter_passports(batch)
+    passports = DataFrame([f=> String[] for f in PP_FIELDS])
+    pp = ""
+    for line in batch
+        if isempty(line)
+            push!(passports, parse_passport(pp), cols=:subset)
+            pp = ""
+            continue
+        end
+        pp = isempty(pp) ? line : join((pp, line), ' ')
+    end
+    !isempty(pp) && push!(passports, parse_passport(pp), cols=:subset)
+    return passports
+end
+
+function isvalidpassport(passport)
+    !any(ismissing, (passport[f] for f in PP_FIELDS[1:end-1]))
+end
+
+
 
 end # module
