@@ -20,6 +20,11 @@ export parse_passport,
        ppfield,
        isvalidfield
 
+# Day 5
+export findseat,
+       seatid,
+       find_empty
+
 # Utilities
 using HTTP, Dates, JSON
 # Day 1
@@ -217,6 +222,31 @@ function isvalidpassport(passport)
     !any(ismissing, (passport[f] for f in PP_FIELDS[1:end-1]))
 end
 
+function moveseat(options, moves, pos)
+    nopt = length(options)
+    nopt == 1 && return first(options)
+    move = moves[pos]
+    if move in ('F', 'L')
+        return moveseat(options[1:(nopt ÷ 2)], moves, pos+1)
+    elseif move in ('B', 'R')
+        return moveseat(options[(nopt ÷ 2 + 1):end], moves, pos+1)
+    else
+        error("Illegal instruction $move")
+    end
+end
 
+const PlaneRows = Tuple(0:127)
+const PlaneSeats = Tuple(0:7)
+
+function findseat(moves)
+    length(moves) == 10 || error("bad instructions $moves")
+    rows = moves[1:7]
+    seats = moves[8:end]
+    row = moveseat(Advent2020.PlaneRows, rows, 1)
+    seat = moveseat(Advent2020.PlaneSeats, seats, 1)
+    return (row,seat)
+end
+
+seatid(row, seat) = 8 * row + seat
 
 end # module
