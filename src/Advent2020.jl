@@ -1,7 +1,8 @@
 module Advent2020
 
 # Utilities
-export get_data
+export get_data,
+       eachgroup
 
 # Day 1
 export in_to_int,
@@ -92,6 +93,32 @@ function get_data(day)
     isfile(datapath) || _setup_data_file(2020, day, datapath)
     eachline(datapath)
 end
+
+struct AdventData
+    e::Base.EachLine
+    j::AbstractString
+end
+
+function Base.iterate(d::AdventData, stop=false)
+    stop && return nothing
+    it = iterate(d.e)
+    isnothing(it) && return it
+    line, state = it
+    grp = line
+    while true
+        it = iterate(d.e, state)
+        isnothing(it) && return (grp, true)
+        line, state = it
+        line == "" && return (grp, false)
+        grp *= d.j * line
+    end
+end
+
+
+eachgroup(path::AbstractString, sep=" ") = AdventData(eachline(path), sep)
+eachgroup(lines::Base.EachLine, sep=" ") = AdventData(lines, sep)
+
+
 
 # Day 1
 

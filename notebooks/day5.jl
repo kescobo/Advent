@@ -54,7 +54,7 @@ end
 #-
 
 @time part5_1 = maximum(line-> seatid(findseat(line)...), get_data(5))
-@warn "Answer:" count(isvalidpassport, eachrow(day4_data))
+@warn "Answer:" part5_1
 
 # --- Part Two ---
 #
@@ -69,7 +69,7 @@ end
 seats = map(line-> seatid(findseat(line)...), get_data(5)) |> sort
 function find_empty(seats)
     (fst, lst) = (firstindex(seats), lastindex(seats))
-    for i in eachindex(seats) 
+    for i in eachindex(seats)
         i == fst && continue
         i == lst && error("Reached the last seat without finding open one")
         seats[i] != seats[i+1] - 1 && return seats[i] + 1
