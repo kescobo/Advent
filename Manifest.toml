@@ -173,7 +173,6 @@ version = "1.0.3"
 
 [[MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
-git-tree-sha1 = "47e19f64fc939b86dea2b9b5e38c29c787f0d581"
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
 
 [[Missings]]
