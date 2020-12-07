@@ -20,3 +20,11 @@ end
 @testset "Day 5" begin
     include("../notebooks/day5.jl")
 end
+
+@testset "Day 6" begin
+    include("../notebooks/day6.jl")
+end
+
+@testset "Day 7" begin
+    include("../notebooks/day7.jl")
+end

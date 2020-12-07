@@ -86,7 +86,7 @@ function _setup_data_file(year, day, path)
     end
 end
 
-_get_input_path(day) = joinpath(@__DIR__, "..", "data", "day_$day.txt")
+_get_input_path(day) = joinpath(@__DIR__, "..", "data", "day$day.txt")
 
 function get_data(day)
     datapath = _get_input_path(day)
