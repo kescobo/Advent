@@ -1,12 +1,10 @@
 module Advent2020
 
 # Utilities
-export get_data,
-       eachgroup
-
-# Day 1
-export in_to_int,
-       accounting
+export Solution,
+       get_data,
+       eachgroup,
+       solve
 
 # Day 2
 export parse_day2_input,
@@ -35,6 +33,19 @@ using SparseArrays
 # Day 4
 using DataFrames
 
+struct Solution{D, P}
+    Solution(day::Int, part::Int) = (1 <= day <= 31 && in(part, (1,2))) ? new{day, part}() : error("Day must be 1-31 and part must be 1 or 2")
+end
+
+whichday(::Solution{D,P}) where {D, P} = D
+whichpart(::Solution{D,P}) where {D, P} = P
+
+solve(sol::Solution{D,P}) = throw(MethodError("No solution defined for day $(whichday(sol)), part $(whichpart(sol))"))
+solve(day::Int, part::Int) = solve(Solution(day, part))
+
+include("Day1.jl")
+
+using .Day1
 
 #############
 # Functions #
@@ -118,20 +129,6 @@ end
 eachgroup(path::AbstractString, sep=" ") = AdventData(eachline(path), sep)
 eachgroup(lines::Base.EachLine, sep=" ") = AdventData(lines, sep)
 
-
-
-# Day 1
-
-function in_to_int(input)
-    return parse.(Int, input)
-end
-
-function accounting(input, n)
-    for c in combinations(input, n)
-        reduce(+, c) == 2020 && return reduce(*, c)
-    end
-    error("No combinations of $n elements sum to 2020")
-end
 
 # Day 2
 
